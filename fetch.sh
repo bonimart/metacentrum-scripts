@@ -13,7 +13,7 @@
 #   PubKeyAuthentication yes
 #   AddKeysToAgent yes
 
-DIRS="./labs ./metacentrum ./scripts"
+DIRS="./labs"
 
 # Start jobs
 for DIR in $DIRS; do
