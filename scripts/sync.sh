@@ -20,7 +20,10 @@
 #
 # ssh-copy-id -i ~/.ssh/KEYNAME.pub USERNAME@tarkil.grid.cesnet.cz
 
-[[ ! -d $1 ]] && echo "Usage: $0 DIR" && exit 1
+if [[ ! -d $1 ]]; then
+   echo "Usage: $0 DIR"
+   exit 1
+fi
 DIR=$1
 CHMOD="--chmod=Du=rwx,Dg=,Do=,Fu=rwx,Fg=,Fo="
 
