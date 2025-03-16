@@ -24,7 +24,7 @@ while true; do
   echo $JOB_ID
   cat jobs/.link_$JOB_ID/command.txt
   echo --------------------------------------------------------------
-  ./m/view_stdout.sh $JOB_ID | tail -n 14 #| head -n 6
+  ./scripts/view_stdout.sh $JOB_ID | tail -n 14 #| head -n 6
   read
   JOB_ID=$(($JOB_ID + 1))
 done
