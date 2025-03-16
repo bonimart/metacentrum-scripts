@@ -4,8 +4,8 @@
 
 ### File sync
 
-- [x] `sync.sh`
-- [ ] `fetch.sh`
+- [x] `sync.sh` - continuous sync of local directory to metacentrum
+- [x] `fetch.sh` - single fetch of metacentrum directory
 
 ### Job scheduling
 
