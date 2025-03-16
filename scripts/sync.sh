@@ -1,21 +1,28 @@
 #!/bin/bash
-# Sync your "labs" and "metacentrum" directory to your metacentrum storage.
-# Sends new files to the remote and
+# Sync a single folder to your metacentrum storage
 # tracks local file changes and updates them on the remote.
 # Does not track file changes on the remote, use ./fetch.sh
 
-# Add this to your ~/.ssh/config
+# REQUIREMENTS (otherwise rsync will fail upon asking for password):
+#
+# 1. Generate ssh key
+#
+# 2. Add this to your ~/.ssh/config
+#
 # Host metacentrum
 #   HostName tarkil.grid.cesnet.cz
 #   IdentityFile ~/.ssh/KEYNAME
 #   User USERNAME
 #   PubKeyAuthentication yes
 #   AddKeysToAgent yes
-
+#
+# 3. Copy public key to metacentrum
+#
+# ssh-copy-id -i ~/.ssh/KEYNAME.pub USERNAME@tarkil.grid.cesnet.cz
 
 [[ ! -d $1 ]] && echo "Usage: $0 DIR" && exit 1
 DIR=$1
-CHMOD="--chmod=Du=rwx,Dg=,Do=,Fg=,Fo="
+CHMOD="--chmod=Du=rwx,Dg=,Do=,Fu=rwx,Fg=,Fo="
 
 # Observe file changes
 function observe_files {
@@ -33,7 +40,7 @@ function observe_files {
             # changed_rel=${changed_abs#"$cwd"/}
 
             echo "[$(date)]: Syncing ./$dir ($changed_abs) ($events)"
-            rsync -dzuptPE $CHMOD --delete "./$dir" metacentrum:"~/$dir"
+            rsync -azuptPE $CHMOD --delete "./$dir" metacentrum:"~/$dir"
     done
 }
 
