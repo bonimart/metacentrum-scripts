@@ -11,13 +11,15 @@
 START_SECONDS=${SECONDS}
 START_UNIX=$(date +%s)
 LOGS_DIR=logs
-VENV_DIR=venv
+VENV_DIR=.venv
+DATADIR=/storage/praha1/home/${USER}
 
 # 1 - dir
 # 2 - filename
 # 3 - args
 SRC_DIR=$(dirname "./$1")
 SRC_FILE=$(basename "./$1")
+# first argument is the filename
 COMMAND="${SRC_FILE} ${@:2} --timestamp ${START_UNIX}"
 
 if [[ ! -d "./${SRC_DIR}" ]]; then
@@ -32,15 +34,11 @@ fi
 
 # Set default wall time
 if [[ -z "${WALL_TIME}" ]]; then
-    echo Setting WALL_TIME to 4h
+    echo Setting WALL_TIME to 6h
     WALL_TIME="6"
 fi
 WALL_TIME="${WALL_TIME}:00:00"
 
-
-# DATADIR=${HOME}
-DATADIR=$(pwd)
-echo "Data dir: ${DATADIR}"
 
 # date '+%Y-%m-%d_%H-%M-%S'
 JOB_NAME="${SRC_FILE}_$(date '+%m%d-%H%M%S')"
@@ -103,9 +101,6 @@ mkdir -p ./${SRC_DIR}
 cp -r \$DATADIR/${JOB_DIR_PATH}/${SRC_DIR}/. ./${SRC_DIR}/ || { echo >&2 "Error while copying labs!"; exit 2; }
 
 echo Copying venv
-# ln -s \$DATADIR/${VENV_DIR} ./venv || { echo >&2 "Error while linking venv!"; exit 2; }
-# cp -r \$DATADIR/${VENV_DIR}/. ./venv/ || { echo >&2 "Error while copying venv!"; exit 2; }
-# rsync -azP \$DATADIR/${VENV_DIR}/ ./venv/ || { echo >&2 "Error while rsyncing venv!"; exit 2; }
 tar -I pigz -x --checkpoint=10000 -f \$DATADIR/${VENV_DIR}.tar.gz || { echo >&2 "Error while extracting venv!"; exit 2; }
 echo Copy done
 ls -a
