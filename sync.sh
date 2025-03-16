@@ -12,7 +12,7 @@
 #   PubKeyAuthentication yes
 #   AddKeysToAgent yes
 
-DIRS="./labs ./metacentrum ./scripts"
+DIRS="./labs ./scripts"
 CHMOD="--chmod=Du=rwx,Dg=,Do=,Fg=,Fo="
 
 # Observe file changes
