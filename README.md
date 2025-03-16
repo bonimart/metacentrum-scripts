@@ -14,6 +14,33 @@
 
 ### Job monitoring
 
+## Requirements for file sync
+
+1. Generate ssh key
+2. Add this to your ~/.ssh/config
+
+```
+Host metacentrum
+  HostName tarkil.grid.cesnet.cz
+  IdentityFile ~/.ssh/KEYNAME
+  User USERNAME
+  PubKeyAuthentication yes
+  AddKeysToAgent yes
+```
+
+3. Copy public key to metacentrum via
+
+`ssh-copy-id -i ~/.ssh/KEYNAME.pub USERNAME@tarkil.grid.cesnet.cz`
+
+## Example workflow
+
+1. Sync these scripts by calling `scripts/sync.sh scripts`
+2. Enter metacentrum frontend via ssh
+3. Create virtual environment via `qsub scripts/venv_init.sh`
+4. Sync your `labs` directory of the deep (reinforcement) learning course via `sync.sh`
+5. Schedule jobs via `scripts/schedule.sh <script> <params>`
+6. Fetch results back to your local machine via `fetch.sh`
+7. Profit
 
 ## Former readme
 
