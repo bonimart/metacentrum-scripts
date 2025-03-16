@@ -75,6 +75,3 @@ echo Uploading the venv
 mv $VENV_DIR.tar.gz $DATADIR/ || { echo >&2 "Result file(s) copying failed (with a code $?) !!"; exit 4; }
 
 echo Done
-
-# clean the SCRATCH directory
-clean_scratch
