@@ -24,7 +24,7 @@
 
 # substitute username and path to to your real username and path
 DATADIR=/storage/praha1/home/${USER}
-VENV_DIR=venv
+VENV_DIR=.venv
 echo DATADIR    = $DATADIR
 echo SCRATCHDIR = $SCRATCHDIR
 echo VENV_DIR   = $VENV_DIR
@@ -33,11 +33,13 @@ echo VENV_DIR   = $VENV_DIR
 export TMPDIR=$SCRATCHDIR/tmp
 mkdir $TMPDIR
 
+trap 'clean_scratch' TERM EXIT
+
 # append a line to a file "jobs_info.txt" containing the ID of the job, the hostname of node it is run on and the path to a scratch directory
 # this information helps to find a scratch directory in case the job fails and you need to remove the scratch directory manually 
 echo "$PBS_JOBID is running on node `hostname -f` in a scratch directory $SCRATCHDIR" >> $DATADIR/jobs_info.txt
 
-module add python/python-3.10.4-intel-19.0.4-sc7snnf
+module add python/3.11.11-gcc-10.2.1-555dlyc
 
 # test if scratch directory is set
 test -n "$SCRATCHDIR" || { echo >&2 "Variable SCRATCHDIR is not set!"; exit 1; }
@@ -60,28 +62,9 @@ if [[ ! -d "$VENV_DIR" ]]; then
     echo "Creating venv in $VENV_DIR"
     python3 -m venv "$VENV_DIR"
 fi
+
 "$VENV_DIR/bin/python3" -m ensurepip
-"$VENV_DIR/bin/python3" -m pip install --upgrade pip setuptools
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir scipy==1.12.0
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir keras~=3.0.5
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir --extra-index-url=https://download.pytorch.org/whl/$FLAVOUR torch~=2.2.0
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir --extra-index-url=https://download.pytorch.org/whl/$FLAVOUR torchaudio~=2.2.0
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir --extra-index-url=https://download.pytorch.org/whl/$FLAVOUR torchvision~=0.17.0
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir --extra-index-url=https://download.pytorch.org/whl/$FLAVOUR torchmetrics~=1.3.1
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir flashlight-text~=0.0.4
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir tensorboard~=2.16.2
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir transformers~=4.37.2
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir gymnasium~=1.0.0a1
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir pygame~=2.5.2
-
-# extras
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir keras_tuner~=1.4.7
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir keras_tuner[bayesian]~=1.4.7
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir flair~=0.13.1
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir pandas
-
-# Download Czech word embeddings
-"$VENV_DIR/bin/python3" -c $'from flair.embeddings import WordEmbeddings; WordEmbeddings("cs")'
+"$VENV_DIR/bin/python3" -m pip install --no-cache-dir --extra-index-url=https://download.pytorch.org/whl/$FLAVOUR npfl139
 
 ls -a
 
