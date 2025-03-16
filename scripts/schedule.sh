@@ -5,8 +5,8 @@
 #
 # [Args]
 # use export NAME=idk to set the args
-# WALL_TIME=4 # the number of hours for the job to run
-#
+# 
+# uses WALL_TIME env variable = total time the job can run for [hours], defaults to 6
 
 START_SECONDS=${SECONDS}
 START_UNIX=$(date +%s)
@@ -14,20 +14,14 @@ LOGS_DIR=logs
 VENV_DIR=.venv
 DATADIR=/storage/praha1/home/${USER}
 
-# 1 - dir
-# 2 - filename
-# 3 - args
 SRC_DIR=$(dirname "./$1")
 SRC_FILE=$(basename "./$1")
 # first argument is the filename
+# the rest are args for the python script
 COMMAND="${SRC_FILE} ${@:2} --timestamp ${START_UNIX}"
 
-if [[ ! -d "./${SRC_DIR}" ]]; then
-    echo "The firts arg '${SRC_DIR}' is not a valid directory."
-    exit 1
-fi
 if [[ ! -f "./${SRC_DIR}/${SRC_FILE}" ]]; then
-    echo "The second arg '${SRC_FILE}' is not a valid file."
+    echo "The first argument '${SRC_FILE}' is not a valid file."
     exit 1
 fi
 
@@ -69,40 +63,26 @@ cat > "${JOB_DIR_PATH}/${JOB_FILE}" << EOF
 # python3 $COMMAND
 ###############################################################################
 
-# test if scratch directory is set
-test -n "\$SCRATCHDIR" || { echo >&2 "Variable SCRATCHDIR is not set!"; exit 1; }
-
-# Used for debugging
-# set -x
-
-DATADIR=${DATADIR}
-echo DATADIR    = \$DATADIR
+echo DATADIR    = ${DATADIR}
 echo SCRATCHDIR = \$SCRATCHDIR
 echo SRC_DIR    = ${SRC_DIR}
 echo SRC_FILE   = ${SRC_FILE}
 echo JOB_DIR    = ${JOB_DIR_PATH}
 echo JOB_NAME   = ${JOB_NAME}
 
-# Make temp dir in the SCRATCHDIR to prevent quota problems
-export TMPDIR=\$SCRATCHDIR/tmp
-if [[ ! -d \$TMPDIR ]]; then
-    mkdir \$TMPDIR
-fi
+export TMPDIR=\$SCRATCHDIR
+trap 'clean_scratch' TERM EXIT
 
-# append a line to a file "jobs_info.txt" containing the ID of the job, the hostname of node it is run on and the path to a scratch directory
-# this information helps to find a scratch directory in case the job fails and you need to remove the scratch directory manually 
-echo "${JOB_NAME} - \$PBS_JOBID is running on node \`hostname -f\` in a scratch directory \$SCRATCHDIR" >> \$DATADIR/jobs_info.txt
-
-module add python/python-3.10.4-intel-19.0.4-sc7snnf
+module add python/3.11.11-gcc-10.2.1-555dlyc
 
 cd \$SCRATCHDIR
 echo Copying labs
 mkdir -p ./${SRC_DIR}
-cp -r \$DATADIR/${JOB_DIR_PATH}/${SRC_DIR}/. ./${SRC_DIR}/ || { echo >&2 "Error while copying labs!"; exit 2; }
+cp -r ${DATADIR}/${JOB_DIR_PATH}/${SRC_DIR}/. ./${SRC_DIR}/ || { echo >&2 "Error while copying labs!"; exit 2; }
 
-echo Copying venv
-tar -I pigz -x --checkpoint=10000 -f \$DATADIR/${VENV_DIR}.tar.gz || { echo >&2 "Error while extracting venv!"; exit 2; }
-echo Copy done
+echo Extracting virtual environment
+tar -I pigz -x --checkpoint=10000 -f ${DATADIR}/${VENV_DIR}.tar.gz || { echo >&2 "Error while extracting venv!"; exit 2; }
+echo Virtual environment extracted
 ls -a
 
 echo Running ${SRC_FILE}
@@ -113,7 +93,7 @@ rm -rf ./${LOGS_DIR}
 fi
 
 ls -a
-\$SCRATCHDIR/./venv/bin/python3 ${COMMAND} || { echo >&2 "Calculation ended up erroneously (with a code \$?) !!"; exit 3; }
+\$SCRATCHDIR/${VENV_DIR}/bin/python3 ${COMMAND} || { echo >&2 "Calculation ended up erroneously (with a code \$?) !!"; exit 3; }
 echo Running done
 
 # move the output to user's DATADIR or exit in case of failure
@@ -122,9 +102,6 @@ cp -r ${LOGS_DIR}/. ${DATADIR}/${JOB_DIR_PATH}/${LOGS_DIR}/ || { echo >&2 "Logs 
 cp ${DATADIR}/${JOB_DIR_PATH}/${JOB_FILE} ${LOGS_DIR}/*/
 cp ${DATADIR}/${JOB_DIR_PATH}/${COMMAND_FILE} ${LOGS_DIR}/*/
 cp -r ${LOGS_DIR}/. ${DATADIR}/${SRC_DIR}/${LOGS_DIR}/ || { echo >&2 "Logs copying failed (to src) (with a code \$?) !!"; exit 4; }
-
-# clean the SCRATCH directory
-clean_scratch
 EOF
 
 chmod +x "${JOB_DIR_PATH}/${JOB_FILE}"
@@ -132,12 +109,12 @@ JOB_ID=$(qsub "${JOB_DIR_PATH}/${JOB_FILE}")
 ln -s $JOB_DIR jobs/.link_$(echo ${JOB_ID} | cut -d '.' -f 1)
 echo Job id: ${JOB_ID}
 echo wqstat ${JOB_ID}
-echo ./m/view_stdout.sh ${JOB_ID}
+echo ./scripts/view_stdout.sh ${JOB_ID}
 echo
 
 # if there are multiple batches in the row,
 # we need to store then in different folders
-# wee need at least 1 sec difference
+# we need at least 1 sec difference
 while [[ ${START_SECONDS} == ${SECONDS} ]]; do
 		sleep .01
 done
