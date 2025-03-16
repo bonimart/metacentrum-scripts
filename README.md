@@ -1,5 +1,22 @@
 # Metacentrum scrips
 
+## 2025 Working scripts
+
+### File sync
+
+- [x] `sync.sh`
+- [ ] `fetch.sh`
+
+### Job scheduling
+
+- [ ] `create_env_job.sh`
+- [ ] `schedule.sh`
+
+### Job monitoring
+
+
+## Former readme
+
 This repository stores scripts that I used to work with the Metacentrum
 clusters during Deep learning class at MFF CU 2024.
 These scrips are working fine, but are not well documented
