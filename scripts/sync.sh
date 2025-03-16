@@ -12,7 +12,9 @@
 #   PubKeyAuthentication yes
 #   AddKeysToAgent yes
 
-DIRS="./labs ./scripts"
+
+[[ ! -d $1 ]] && echo "Usage: $0 DIR" && exit 1
+DIR=$1
 CHMOD="--chmod=Du=rwx,Dg=,Do=,Fg=,Fo="
 
 # Observe file changes
@@ -38,11 +40,9 @@ function observe_files {
 read -p "Did you run ./fetch.sh (to prevent logs loss)? "
 
 # Start jobs
-for DIR in $DIRS; do
-    echo Initial sync $DIR
-    rsync -azuptPE $CHMOD --delete "${DIR}/" metacentrum:"~/${DIR}/"
-    observe_files "$DIR" &
-done
+echo Initial sync $DIR
+rsync -azuptPE $CHMOD --delete "${DIR}/" metacentrum:"~/${DIR}/"
+observe_files "$DIR" &
 
 # Kill jobs on exit
 trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
