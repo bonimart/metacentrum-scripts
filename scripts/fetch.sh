@@ -25,6 +25,6 @@ fi
 DIR=$1
 
 echo Fetching $DIR
-rsync -azuptPE --delete metacentrum:"~/${DIR}/" "${DIR}/" 
+rsync -zurtPE --chmod=F644,D755 metacentrum:"~/${DIR}/" "${DIR}/" 
 echo Done
 

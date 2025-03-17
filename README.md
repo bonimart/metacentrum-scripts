@@ -10,7 +10,7 @@
 ### Job scheduling
 
 - [x] `venv_init.sh` - create virtual environment and save it as tarball in home directory
-- [ ] `schedule.sh`
+- [x] `schedule.sh` - schedule job with given script and parameters
 
 ### Job monitoring
 
