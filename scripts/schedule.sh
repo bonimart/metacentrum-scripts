@@ -18,7 +18,7 @@ SRC_DIR=$(dirname "./$1")
 SRC_FILE=$(basename "./$1")
 # first argument is the filename
 # the rest are args for the python script
-COMMAND="${SRC_FILE} ${@:2} --timestamp ${START_UNIX}"
+COMMAND="${SRC_FILE} ${@:2}"
 
 if [[ ! -f "./${SRC_DIR}/${SRC_FILE}" ]]; then
     echo "The first argument '${SRC_FILE}' is not a valid file."
