@@ -1,4 +1,6 @@
 #!/bin/bash
+#PBS -N venv_init
+#PBS -l select=1:ncpus=1:mem=8gb:scratch_local=10gb
 # Creates a virtual environment in the scratch directory
 # and moves it to the home directory in .tar.gz format
 
@@ -28,7 +30,7 @@ echo Virtual environment created
 echo Installing dependencies
 TORCH_FLAVOR=cu118
 "$VENV_DIR/bin/python3" -m ensurepip
-"$VENV_DIR/bin/python3" -m pip install --no-cache-dir --extra-index-url=https://download.pytorch.org/whl/$TORCH_FLAVOR npfl139
+"$VENV_DIR/bin/python3" -m pip install --no-cache-dir --extra-index-url=https://download.pytorch.org/whl/$TORCH_FLAVOR npfl139 npfl138
 
 ls -a
 

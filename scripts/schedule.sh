@@ -54,7 +54,7 @@ cat > "${JOB_DIR_PATH}/${JOB_FILE}" << EOF
 #!/bin/bash
 #PBS -N ${JOB_NAME}
 #PBS -q gpu
-#PBS -l select=1:ncpus=8:mem=64gb:ngpus=1:gpu_mem=8gb:scratch_shm=true
+#PBS -l select=1:ncpus=4:mem=16gb:ngpus=1:gpu_mem=8gb:scratch_shm=true
 #PBS -l walltime=${WALL_TIME}
 #PBS -o ${DATADIR}/${JOB_DIR_PATH}/stdout
 #PBS -e ${DATADIR}/${JOB_DIR_PATH}/stderr
