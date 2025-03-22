@@ -43,7 +43,7 @@ function observe_files {
             # changed_rel=${changed_abs#"$cwd"/}
 
             echo "[$(date)]: Syncing ./$dir ($changed_abs) ($events)"
-            rsync -azuptPE $CHMOD --delete "./$dir" metacentrum:"~/$dir"
+            rsync -azuptPE $CHMOD --exclude='.git' --delete "./$dir" metacentrum:"~/$dir"
     done
 }
 
@@ -51,7 +51,7 @@ read -p "Did you run ./fetch.sh (to prevent logs loss)? "
 
 # Start jobs
 echo Initial sync $DIR
-rsync -azuptPE $CHMOD --delete "${DIR}/" metacentrum:"~/${DIR}/"
+rsync -azuptPE $CHMOD --exclude='.git' --delete "${DIR}/" metacentrum:"~/${DIR}/"
 observe_files "$DIR" &
 
 # Kill jobs on exit
