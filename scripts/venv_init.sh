@@ -1,6 +1,8 @@
 #!/bin/bash
 #PBS -N venv_init
 #PBS -l select=1:ncpus=1:mem=8gb:scratch_local=10gb
+#PBS -o /storage/praha1/home/${USER}/jobs/${PBS_JOBID}.stdout
+#PBS -e /storage/praha1/home/${USER}/jobs/${PBS_JOBID}.stderr
 # Creates a virtual environment in the scratch directory
 # and moves it to the home directory in .tar.gz format
 
