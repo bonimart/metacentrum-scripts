@@ -101,6 +101,7 @@ echo Copying the '${LOGS_DIR}' folder
 cp -r ${LOGS_DIR}/. ${DATADIR}/${JOB_DIR_PATH}/${LOGS_DIR}/ || { echo >&2 "Logs copying failed (to job) (with a code \$?) !!"; exit 4; }
 cp ${DATADIR}/${JOB_DIR_PATH}/${JOB_FILE} ${LOGS_DIR}/*/
 cp ${DATADIR}/${JOB_DIR_PATH}/${COMMAND_FILE} ${LOGS_DIR}/*/
+mkdir -p ${DATADIR}/${SRC_DIR}/${LOGS_DIR}
 cp -r ${LOGS_DIR}/. ${DATADIR}/${SRC_DIR}/${LOGS_DIR}/ || { echo >&2 "Logs copying failed (to src) (with a code \$?) !!"; exit 4; }
 EOF
 
